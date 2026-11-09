@@ -1,3 +1,26 @@
+
+# Generated diagnostic reports
 reports/*.txt
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Log files
+# Keep the main execution log in GitHub
 logs/*
+!logs/netdiag.log
 !logs/.gitkeep
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
