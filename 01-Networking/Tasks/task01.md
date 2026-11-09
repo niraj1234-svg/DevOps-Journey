@@ -16,23 +16,11 @@ The OSI (Open Systems Interconnection) and TCP/IP models explain how data travel
 | Layer No. | Layer Name | Purpose | Protocols / Technologies | Real-World Example |
 |---:|---|---|---|---|
 | 7 | Application | Provides network services to user applications. | HTTP, HTTPS, FTP, SMTP, DNS | A browser sends an HTTP request to Google. |
-
-
 | 6 | Presentation | Handles data encryption, decryption, compression and format conversion. | TLS, JPEG, JSON | TLS encrypts data exchanged between a browser and a website. |
-
-
 | 5 | Session | Establishes, manages and terminates communication sessions. | RPC, NetBIOS | Managing communication sessions between applications. |
-
-
 | 4 | Transport | Provides end-to-end communication, segmentation and reliability. | TCP, UDP | TCP ensures reliable delivery of webpage data. |
-
-
 | 3 | Network | Handles logical addressing and routing between networks. | IPv4, IPv6, ICMP | IP routes packets from your computer to Google's server. |
-
-
 | 2 | Data Link | Handles framing, MAC addressing and error detection. | Ethernet, Wi-Fi (IEEE 802.11) | Wi-Fi delivers frames between your laptop and router. |
-
-
 | 1 | Physical | Transmits raw bits through physical transmission media. | Ethernet cables, Fiber, Radio signals | Data travels through Wi-Fi radio signals or Ethernet cables. |
 
 ## 3. TCP/IP Model (4 Layers)
