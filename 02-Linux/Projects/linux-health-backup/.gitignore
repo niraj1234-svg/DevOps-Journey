@@ -1,0 +1,12 @@
+# Generated backup archives
+backups/*.tar.gz
+
+# Log files
+logs/*.log
+
+# Restore testing files
+restore-test/
+
+# Temporary files
+*.tmp
+*.swp
