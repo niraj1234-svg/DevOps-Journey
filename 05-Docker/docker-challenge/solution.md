@@ -378,9 +378,249 @@ The application was accessible on port 8084, and the MySQL health check passed.
 
 **Database Persistence Test:**
 
-A test table and record were created in MySQL. The containers were stopped and removed using `docker compose down` without deleting the named volume.
+A named volume `db_data` was configured for persistent MySQL storage.
 
-After restarting the services, the test record was queried again to verify persistent database storage.
+The MySQL service reached a healthy state during Docker Compose deployment. However, successful data persistence across container recreation was not independently verified.
 
-**Result:** Database data remained available across container recreation.
+**Result:** Persistent volume configuration was implemented. Full database persistence verification remains pending.
 
+
+### Task 9: Analyze Docker Image with Docker Scout
+
+**Objective:** Analyze the Docker image for security vulnerabilities using Docker Scout and understand the importance of container image security.
+
+**Step 1: Install Docker Scout**
+
+Installed Docker Scout CLI and verified its version.
+
+```bash
+docker scout version
+```
+
+**Installed Version:**
+```text
+v1.30.0
+```
+
+**Step 2: Analyze Docker Image**
+
+Selected Docker image:
+
+```text
+nirajdhore/sample-app:v1.0
+```
+
+Run Docker Scout Quickview:
+
+```bash
+docker scout quickview nirajdhore/sample-app:v1.0
+```
+
+Run vulnerability analysis:
+
+```bash
+docker scout cves nirajdhore/sample-app:v1.0
+```
+
+**Step 3: Generate Vulnerability Report**
+
+```bash
+docker scout cves nirajdhore/sample-app:v1.0 > scout_report.txt
+```
+
+**Step 4: Troubleshooting**
+
+During the vulnerability scan, Docker Scout encountered a disk quota error while copying image layers into its temporary directory.
+
+The EC2 instance had limited temporary storage.
+
+To resolve this issue, a separate temporary directory was created:
+
+```bash
+sudo mkdir -p /var/tmp/docker-scout-tmp
+sudo chmod 1777 /var/tmp/docker-scout-tmp
+```
+
+The scan was retried using the new temporary directory:
+
+```bash
+TMPDIR=/var/tmp/docker-scout-tmp docker scout cves nirajdhore/sample-app:v1.0
+```
+
+Docker Scout successfully pulled and stored the image for indexing. However, the final vulnerability scan report was not generated successfully.
+
+The temporary indexing directory eventually occupied approximately 787 MB and was removed during EC2 disk cleanup.
+
+**Result:**
+
+- Docker Scout CLI installed successfully.
+- Docker image pull completed successfully.
+- Image storage for indexing completed successfully.
+- Full CVE analysis remains pending because of temporary storage/indexing issues.
+- No vulnerability count or severity results are claimed because a complete report was not generated.
+
+**Future Improvements:**
+
+1. Complete the CVE scan after resolving the indexing issue.
+2. Identify vulnerabilities by severity: Critical, High, Medium and Low.
+3. Identify affected packages and dependencies.
+4. Update vulnerable packages and base images where fixes are available.
+5. Rebuild and scan the image again to verify improvements.
+
+**Conclusion:**
+
+Docker Scout provides visibility into container image vulnerabilities and helps developers understand the importance of securing application dependencies and base images.
+
+
+
+### Task 10: Documentation and Critical Reflection
+
+**Objective:** Document all Docker implementation tasks, commands, challenges, troubleshooting steps and key learnings.
+
+### 1. Project Overview
+
+This Docker challenge involved containerizing a Node.js application, building optimized Docker images, managing persistent storage, configuring container networking and deploying multiple services using Docker Compose.
+
+The following topics were covered:
+
+1. Introduction to Docker and containerization.
+2. Creating and running a Node.js application using Docker.
+3. Understanding Docker images, containers and other components.
+4. Creating multi-stage and Distroless Docker images.
+5. Publishing Docker images to Docker Hub.
+6. Implementing persistent storage using Docker volumes.
+7. Configuring Docker networking.
+8. Managing multi-container applications using Docker Compose.
+9. Analyzing image security using Docker Scout.
+10. Documenting implementation and reflecting on the learning experience.
+
+### 2. Important Docker Commands
+
+**Image Management**
+
+```bash
+docker images
+docker build -t sample-app .
+docker tag sample-app nirajdhore/sample-app:v1.0
+docker push nirajdhore/sample-app:v1.0
+docker pull nirajdhore/sample-app:v1.0
+```
+
+**Container Management**
+
+```bash
+docker run -d -p 8080:80 --name sample-app sample-app
+docker ps
+docker ps -a
+docker logs sample-app
+docker stop sample-app
+docker rm sample-app
+```
+
+**Volume Management**
+
+```bash
+docker volume create my_volume
+docker volume ls
+docker volume inspect my_volume
+```
+
+**Network Management**
+
+```bash
+docker network create my_network
+docker network ls
+docker network inspect my_network
+```
+
+**Docker Compose**
+
+```bash
+docker compose config -q
+docker compose up -d
+docker compose ps
+docker compose logs
+docker compose down
+```
+
+**Docker Scout**
+
+```bash
+docker scout version
+docker scout quickview nirajdhore/sample-app:v1.0
+docker scout cves nirajdhore/sample-app:v1.0
+```
+
+### 3. Key Learnings
+
+- Understood the difference between Docker images and containers.
+- Learned to write Dockerfiles and build custom application images.
+- Implemented multi-stage builds to reduce image size.
+- Explored Distroless images to minimize unnecessary runtime components.
+- Published Docker images to Docker Hub.
+- Implemented persistent storage using named Docker volumes.
+- Learned about custom bridge networks and container communication.
+- Deployed a multi-container application using Docker Compose.
+- Explored Docker Scout for image vulnerability analysis.
+- Learned how to troubleshoot disk space, file permission and container startup issues.
+
+### 4. Challenges Faced and Solutions
+
+**Challenge 1: Container File Permission Issues**
+
+The application initially encountered permission errors while writing data to a mounted volume.
+
+**Solution:** Configured the application data directory with the correct ownership for the non-root Distroless container user.
+
+**Challenge 2: MySQL Container Startup**
+
+The MySQL container encountered startup difficulties on the limited-resource EC2 instance.
+
+**Solution:** Used resource limits and a lightweight MySQL configuration during the Docker Compose exercise. The Compose database subsequently reached a healthy state.
+
+**Challenge 3: Docker Storage Management**
+
+Repeated image pulls and container operations consumed disk space.
+
+**Solution:** Used Docker storage inspection commands and removed unnecessary stopped containers and unused images while preserving important volumes.
+
+**Challenge 4: Docker Scout Temporary Storage**
+
+Docker Scout encountered a disk quota error while copying image layers into `/tmp`.
+
+**Solution Attempted:** Configured an alternative temporary directory under `/var/tmp`. Image storage and indexing started, but the complete CVE scan remains pending.
+
+### 5. Benefits of Docker
+
+1. **Portability:** Applications can run consistently across different environments.
+2. **Isolation:** Containers isolate application processes and dependencies.
+3. **Efficiency:** Containers generally require fewer resources than traditional virtual machines.
+4. **Scalability:** Services can be deployed and managed independently.
+5. **CI/CD Integration:** Docker simplifies application packaging and deployment automation.
+6. **Reproducibility:** Dockerfiles help create consistent application environments.
+
+### 6. Limitations and Challenges
+
+- Container networking and DNS require proper configuration.
+- Volume permissions can cause application errors.
+- Resource-intensive services may struggle on low-memory instances.
+- Disk space management is important on small servers.
+- Container images require regular security scanning and updates.
+
+### 7. Future Improvements
+
+- Complete the pending Docker Scout CVE analysis.
+- Verify full application-to-database communication.
+- Verify MySQL data persistence across container recreation.
+- Improve image security by updating vulnerable dependencies.
+- Automate Docker image building and publishing using Jenkins CI/CD.
+- Implement container monitoring using Prometheus and Grafana.
+- Improve resource management and storage optimization.
+
+### 8. Final Conclusion
+
+This Docker challenge provided practical experience in containerizing a Node.js application, creating optimized Docker images, managing persistent storage, configuring networking, publishing images and deploying multi-container applications.
+
+It also provided exposure to real-world DevOps challenges involving permissions, limited server resources, storage management and container security.
+
+The project established a practical foundation for learning advanced DevOps tools and implementing automated CI/CD pipelines.
