@@ -1,0 +1,22 @@
+{
+  "name": "devops-task-manager-backend",
+  "version": "1.0.0",
+  "description": "Backend API for DevOps Task Manager",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "devops",
+    "task-manager",
+    "nodejs",
+    "express"
+  ],
+  "author": "Niraj Dhore",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.3.0"
+  }
+}

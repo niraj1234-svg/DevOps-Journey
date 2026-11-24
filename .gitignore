@@ -1,0 +1,11 @@
+# Node.js dependencies
+node_modules/
+
+# Vim swap and backup files
+*.swp
+*.swo
+*~
+
+# Local SQLite database
+data/*.db
+**/data/*.db
